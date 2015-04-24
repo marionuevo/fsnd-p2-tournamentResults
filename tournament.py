@@ -13,14 +13,31 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("TRUNCATE matches")
+    conn.commit()
+    conn.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("TRUNCATE players")
+    conn.commit()
+    conn.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT (id) as NUM FROM players")
+    num = cursor.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return num
 
 
 def registerPlayer(name):
@@ -32,7 +49,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO players (name) VALUES (%s)", (name,))
+    conn.commit()
+    conn.close()   
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
@@ -47,6 +68,35 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    conn = connect()
+    cursor = conn.cursor()
+
+    #combo
+    cursor.execute(
+        """SELECT mat.id, mat.name, count (matches.winner) as wins, mat.matcheslist as matches
+            FROM matches RIGHT JOIN (
+                SELECT players.id, players.name, count (matches.winner + matches.looser) as matcheslist 
+                FROM players LEFT JOIN matches ON (players.id = matches.winner OR players.id = matches.looser)
+                GROUP BY players.id) as mat
+            ON mat.id = matches.winner
+            GROUP BY mat.id, mat.name, mat.matcheslist ORDER BY wins DESC""")
+    
+    #winners
+    # cursor.execute(
+    #     """SELECT players.id, players.name, count (matches.winner) as wins 
+    #         FROM players LEFT JOIN matches ON players.id = matches.winner
+    #         GROUP BY players.id""")
+
+    #matches
+    # cursor.execute(
+    #     """SELECT players.id, players.name, count (matches.winner + matches.looser) as matches 
+    #         FROM players LEFT JOIN matches ON (players.id = matches.winner OR players.id = matches.looser)
+    #         GROUP BY players.id""")
+
+    result = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return result
 
 
 def reportMatch(winner, loser):
@@ -56,6 +106,11 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO matches (winner, looser) VALUES (%s, %s)", (winner, loser))
+    conn.commit()
+    conn.close()  
  
  
 def swissPairings():
@@ -73,5 +128,18 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM standings")
+    result = cursor.fetchall()
+    conn.commit()
+    conn.close()
+
+    pairings = []
+    for i in range(0, len(result), 2):
+        pairings.append((result[i][0], result[i][1] ,result[i+1][0], result[i+1][1]))
+
+    return pairings
+
 
 
