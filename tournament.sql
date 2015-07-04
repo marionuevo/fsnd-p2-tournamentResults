@@ -28,11 +28,32 @@ CREATE TABLE matches (
     looser integer
 );
 
+CREATE VIEW matchesNumber AS
+    SELECT
+        players.id,
+        count (matches.winner + matches.looser) AS matches
+    FROM players LEFT JOIN matches ON
+        (players.id = matches.winner OR players.id = matches.looser)
+    GROUP BY players.id;
+
+CREATE VIEW winsNumber AS
+    SELECT
+        players.id,
+        count (matches.winner) as wins
+    FROM players LEFT JOIN matches ON
+        (players.id = matches.winner)
+    GROUP BY players.id;
+
 CREATE VIEW standings AS
-    SELECT mat.id, mat.name, count (matches.winner) as wins, mat.matcheslist as matches
-    FROM matches RIGHT JOIN (
-        SELECT players.id, players.name, count (matches.winner + matches.looser) as matcheslist 
-        FROM players LEFT JOIN matches ON (players.id = matches.winner OR players.id = matches.looser)
-        GROUP BY players.id) as mat
-    ON mat.id = matches.winner
-    GROUP BY mat.id, mat.name, mat.matcheslist ORDER BY wins DESC
+    SELECT
+        players.id,
+        players.name,
+        winsNumber.wins,
+        matchesNumber.matches
+    FROM
+        players, matchesNumber, winsNumber
+    WHERE
+        players.id = matchesNumber.id AND
+        players.id = winsNumber.id
+    ORDER BY wins DESC;
+

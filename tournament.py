@@ -71,27 +71,7 @@ def playerStandings():
     conn = connect()
     cursor = conn.cursor()
 
-    #combo
-    cursor.execute(
-        """SELECT mat.id, mat.name, count (matches.winner) as wins, mat.matcheslist as matches
-            FROM matches RIGHT JOIN (
-                SELECT players.id, players.name, count (matches.winner + matches.looser) as matcheslist 
-                FROM players LEFT JOIN matches ON (players.id = matches.winner OR players.id = matches.looser)
-                GROUP BY players.id) as mat
-            ON mat.id = matches.winner
-            GROUP BY mat.id, mat.name, mat.matcheslist ORDER BY wins DESC""")
-    
-    #winners
-    # cursor.execute(
-    #     """SELECT players.id, players.name, count (matches.winner) as wins 
-    #         FROM players LEFT JOIN matches ON players.id = matches.winner
-    #         GROUP BY players.id""")
-
-    #matches
-    # cursor.execute(
-    #     """SELECT players.id, players.name, count (matches.winner + matches.looser) as matches 
-    #         FROM players LEFT JOIN matches ON (players.id = matches.winner OR players.id = matches.looser)
-    #         GROUP BY players.id""")
+    cursor.execute("SELECT * FROM standings")
 
     result = cursor.fetchall()
     conn.commit()
@@ -139,6 +119,7 @@ def swissPairings():
     for i in range(0, len(result), 2):
         pairings.append((result[i][0], result[i][1] ,result[i+1][0], result[i+1][1]))
 
+    print pairings
     return pairings
 
 
