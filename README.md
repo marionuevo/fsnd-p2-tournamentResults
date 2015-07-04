@@ -8,9 +8,11 @@ The goal for this project was to develop a database schema to store the game mat
 
 - `tournament.py`: Tournament required functions.
 - `tournament.sql`: SQL file to create required database, tables and views.
-- `tournament_test.py`: main file to test the `tournament.py` functions.
+- `tournament_test.py`: This is the main file to test the `tournament.py` functions.
 
-In order to use the program you should:
-- clone the git repository
-- use `tournament.sql`to create the database using `\i tournament.sql` command from psql environment
-- run the program typewriting `python tournament_test.py` from the command line and evaluate
+## Quick start
+
+- [Download the latest release](https://github.com/marionuevo/fsnd-p2-tournamentResults/archive/master.zip).
+- Clone the repo: `git clone https://github.com/marionuevo/fsnd-p2-tournamentResults.git`.
+
+Then, run `\i tournament.sql` command from psql environment and run the program with `python tournament_test.py` from the command line.
