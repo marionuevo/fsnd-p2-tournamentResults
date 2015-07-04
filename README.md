@@ -12,6 +12,8 @@ The goal for this project was to develop a database schema to store the game mat
 
 ## Quick start
 
+Several quick start options are available:
+
 - [Download the latest release](https://github.com/marionuevo/fsnd-p2-tournamentResults/archive/master.zip).
 - Clone the repo: `git clone https://github.com/marionuevo/fsnd-p2-tournamentResults.git`.
 
