@@ -28,6 +28,7 @@ CREATE TABLE matches (
     looser integer
 );
 
+-- creating VIEWS
 CREATE VIEW matchesNumber AS
     SELECT
         players.id,
@@ -56,4 +57,3 @@ CREATE VIEW standings AS
         players.id = matchesNumber.id AND
         players.id = winsNumber.id
     ORDER BY wins DESC;
-
